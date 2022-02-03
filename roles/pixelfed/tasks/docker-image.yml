@@ -1,0 +1,28 @@
+---
+
+- name: Ensure docker container image is pulled
+  docker_image:
+    name: "{{ pixelfed_container_image }}"
+    state: present
+    source: pull
+    force_source: "{{ true if docker_container_image_tag else false }}"
+  when: not pixelfed_container_image_local_build
+
+- name: Ensure upstream git repository is cloned to source folder
+  git:
+    repo: "{{ pixelfed_source_upstream_git_repo }}"
+    dest: "{{ pixelfed_source_path }}"
+    update: yes
+    clone: yes
+  when: pixelfed_container_image_local_build
+
+- name: Build docker container image '{{ pixelfed_container_image }}' locally
+  docker_image:
+    name: "{{ pixelfed_container_image_name }}"
+    tag: "{{ pixelfed_container_image_tag | default('v' + pixelfed_version) }}"
+    state: present
+    source: build
+    build:
+      dockerfile: "contrib/docker/Dockerfile.apache"
+      path: "{{ pixelfed_source_path }}"
+  when: pixelfed_container_image_local_build

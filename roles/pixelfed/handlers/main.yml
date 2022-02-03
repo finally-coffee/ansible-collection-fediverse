@@ -1,0 +1,17 @@
+---
+
+- name: Restart pixelfed (docker)
+  docker_container:
+    name: "{{ pixelfed_container_name }}"
+    state: started
+    restart: yes
+  when: 'docker' in pixelfed_deployment_method
+  listen: restart-pixelfed
+
+- name: Restart pixelfed worker (docker)
+  docker_container:
+    name: "{{ pixelfed_worker_container_name }}"
+    state: started
+    restart: yes
+  when: 'docker' in pixelfed_deployment_method
+  listen: restart-pixelfed

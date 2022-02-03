@@ -1,0 +1,143 @@
+---
+
+pixelfed_user: pixelfed
+pixelfed_version: 0.11.2
+pixelfed_base_path: /opt/pixelfed
+
+pixelfed_deployment_method: docker_selfbuilt
+
+# user to run pixelfed as
+pixelfed_run_user: "{{ pixelfed_user_stat.uid | default(pixelfed_user) }}"
+pixelfed_run_group: "{{ pixelfed_user_stat.group | default(pixelfed_user) }}"
+
+# container settings
+pixelfed_container_name: pixelfed
+pixelfed_container_image_name: pixelfed
+pixelfed_container_image_tag: ~
+pixelfed_container_image: "{{ pixelfed_container_image_name }}:{{ pixelfed_container_image_tag | default('v' + pixelfed_version, True) }}"
+pixelfed_container_image_local_build: true
+pixelfed_container_ports: []
+pixelfed_container_networks: []
+pixelfed_container_extra_volumes: []
+pixelfed_container_extra_labels: {}
+pixelfed_container_extra_env: {}
+pixelfed_container_restart_policy: unless-stopped
+pixelfed_worker_container_name: "{{ pixelfed_container_name }}-worker"
+
+# host filesystem paths
+pixelfed_config_path: "{{ pixelfed_base_path }}/config"
+pixelfed_storage_path: "{{ pixelfed_base_path }}/storage"
+pixelfed_source_path: "{{ pixelfed_base_path }}/source"
+
+pixelfed_app_paths:
+  - path: "{{ pixelfed_base_path }}"
+    mode: "0750"
+  - path: "{{ pixelfed_config_path }}"
+    mode: "0750"
+  - path: "{{ pixelfed_storage_path }}"
+    mode: "0750"
+  - path: "{{ pixelfed_source_path }}"
+    mode: "0750"
+
+pixelfed_config_app_key: ~
+pixelfed_config_app_name: "Pixelfed"
+pixelfed_config_app_env: production
+pixelfed_config_app_debug: false
+pixelfed_config_app_url: "https://{{ pixelfed_config_app_url }}"
+pixelfed_config_app_domain: ~ # my.pixelfed.domain
+pixelfed_config_admin_domain: "{{ pixelfed_config_app_domain }}"
+pixelfed_config_session_domain: "{{ pixelfed_config_app_domain }}"
+
+pixelfed_config_open_registration: true
+pixelfed_config_enforce_email_verification: false
+pixelfed_config_pf_max_users: 1000
+pixelfed_config_oauth_enabled: true
+
+pixelfed_config_app_timezone: UTC
+pixelfed_config_app_locale: en
+
+pixelfed_config_limit_account_size: true
+pixelfed_config_max_account_size: 1000000
+pixelfed_config_max_photo_size: 15000
+pixelfed_config_max_avatar_size: 2000
+pixelfed_config_max_caption_length: 500
+pixelfed_config_max_bio_length: 125
+pixelfed_config_max_name_length: 30
+pixelfed_config_max_album_length: 4
+pixelfed_config_image_quality: 80
+pixelfed_config_pf_optimize_images: true
+pixelfed_config_pf_optimize_videos: true
+pixelfed_config_admin_env_editor: false
+pixelfed_config_account_deletion: true
+pixelfed_config_account_delete_after: false
+pixelfed_config_max_links_per_post: 0
+
+pixelfed_config_instance_description: ~
+pixelfed_config_instance_public_hashtags: false
+pixelfed_config_instance_contact_email: ~
+pixelfed_config_instance_public_local_timetime: false
+pixelfed_config_banned_usernames: ~
+pixelfed_config_stories_enabled: false
+pixelfed_config_restricted_instance: false
+
+pixelfed_config_mail_driver: log
+pixelfed_config_mail_host: ~
+pixelfed_config_mail_port: 25
+pixelfed_config_mail_from_address: "pixelfed@{{ pixelfed_config_app_domain }}"
+pixelfed_config_mail_from_name: "{{ pixelfed_config_app_name }}"
+pixelfed_config_mail_username: null
+pixelfed_config_mail_password: null
+pixelfed_config_mail_encryption: null
+
+pixelfed_config_db_connection: pgsql
+pixelfed_config_db_host: postgres
+pixelfed_config_db_port: 5432
+pixelfed_config_db_username: pixelfed
+pixelfed_config_db_password: ~
+pixelfed_config_db_database: pixelfed
+
+pixelfed_config_redis_client: phpredis
+pixelfed_config_redis_scheme: tcp
+pixelfed_config_redis_host: redis
+pixelfed_config_redis_password: ~
+pixelfed_config_redis_port: 6379
+pixelfed_config_redis_database: 0
+
+pixelfed_config_exp_lc: false
+pixelfed_config_exp_rec: false
+pixelfed_config_exp_loops: false
+
+pixelfed_config_activity_pub: false
+pixelfed_config_ap_remote_follow: false
+pixelfed_config_ap_shared_inbox: false
+pixelfed_config_ap_inbox: false
+pixelfed_config_ap_outbox: false
+pixelfed_config_atom_feeds: true
+pixelfed_config_nodeinfo: true
+pixelfed_config_webfinger: true
+
+pixelfed_config_filesystem_driver: local
+pixelfed_config_filesystem_cloud: s3
+pixelfed_config_pf_enable_cloud: false
+pixelfed_config_aws_access_key_id: ~
+pixelfed_config_aws_secret_access_key: ~
+pixelfed_config_aws_default_region: ~
+pixelfed_config_aws_bucket: ~
+pixelfed_config_aws_url: ~
+pixelfed_config_aws_endpont: ~
+pixelfed_config_aws_use_path_style_endpoint: false
+
+pixelfed_config_horizon_darkmode: false
+pixelfed_config_pf_costar_enabled: false
+pixelfed_config_media_exif_database: false
+pixelfed_config_log_channel: stderr
+pixelfed_config_image_driver: imagick
+
+pixelfed_config_broadcast_driver: log
+pixelfed_config_cache_driver: redis
+pixelfed_config_restrict_html_types: true
+pixelfed_config_queue_driver: redis
+pixelfed_config_session_driver: redis
+pixelfed_config_trust_proxies: "*"
+pixelfed_config_passport_private_key: ~
+pixelfed_config_passport_public_key: ~

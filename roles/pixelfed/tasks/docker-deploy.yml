@@ -1,0 +1,28 @@
+---
+
+- name: Ensure docker container '{{ pixelfed_container_name }}' is running
+  docker_container:
+    name: "{{ pixelfed_container_name }}"
+    image: "{{ pixelfed_container_image }}"
+    env: "{{ pixelfed_container_env }}"
+    env_file: "{{ pixelfed_config_path }}/env"
+    labels: "{{ pixelfed_container_labels }}"
+    volumes: "{{ pixelfed_container_volumes }}"
+    ports: "{{ pixelfed_container_ports | default(omit, True) }}"
+    networks: "{{ pixelfed_container_networks | default(omit, True) }}"
+    purge_networks: "{{ pixelfed_container_purge_networks|default(False) }}"
+    restart_policy: "{{ pixelfed_container_restart_policy }}"
+    state: started
+
+- name: Ensure docker container '{{ pixelfed_worker_container_name }}' is running
+  docker_container:
+    name: "{{ pixelfed_worker_container_name }}"
+    image: "{{ pixelfed_container_image }}"
+    env: "{{ pixelfed_container_env }}"
+    env_file: "{{ pixelfed_config_path }}/env"
+    volumes: "{{ pixelfed_container_volumes }}"
+    networks: "{{ pixelfed_container_networks | default(omit, True) }}"
+    purge_networks: "{{ pixelfed_container_purge_networks|default(False) }}"
+    restart_policy: "{{ pixelfed_container_restart_policy }}"
+    command: "gosu www-data php artisan horizon"
+    state: started

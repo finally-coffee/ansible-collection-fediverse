@@ -1,0 +1,48 @@
+---
+
+- name: Ensure user '{{ pixelfed_user }}' for pixelfed is created
+  user:
+    name: "{{ pixelfed_user }}"
+    state: present
+    system: true
+  register: pixelfed_user_stat
+
+- name: Ensure file system paths exist for persisting data
+  file:
+    path: "{{ dir.path }}"
+    state: directory
+    owner: "{{ dir.user | default(pixelfed_run_user) }}"
+    group: "{{ dir.group | default(pixelfed_run_group) }}"
+    mode: "{{ dir.mode }}"
+  loop: "{{ pixelfed_app_paths }}"
+  loop_control:
+    loop_var: dir
+    label: "{{ dir.path }}"
+
+- name: Ensure pixelfed configuration is templated
+  copy:
+    content: |+
+      {% for key in pixelfed_config | dict2items %}
+      {% if pixelfed_config[key] %}
+      {{ key }}={{ pixelfed_config[key] }}
+      {% endif %}
+      {% endfor %}
+    dest: "{{ pixelfed_config_path }}/env"
+    owner: "{{ pixelfed_run_user }}"
+    group: "{{ pixelfed_run_group }}"
+    mode: "0640"
+  notify: restart-pixelfed
+
+- name: Ensure docker container image is available
+  include_tasks:
+    file: docker-image.yml
+  when: 'docker' in pixelfed_deployment_method
+
+- name: Ensure pixelfed instance is started
+  block:
+    - name: Ensure pixelfed instance is started (docker)
+      include_tasks:
+        file: docker-deploy.yml
+      when: 'docker' in pixelfed_deployment_method
+
+

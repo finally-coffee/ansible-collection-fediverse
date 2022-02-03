@@ -1,0 +1,133 @@
+---
+
+pixelfed_container_base_volumes:
+  - "{{ pixelfed_storage_path }}:/var/www/storage:z"
+  - "{{ pixelfed_config_path/env:/var/www/.env:ro"
+
+pixelfed_container_base_env: {}
+
+pixelfed_container_base_labels:
+  VERSION: "{{ pixelfed_version }}"
+
+pixelfed_container_volumes: "{{ pixelfed_container_base_volumes + pixelfed_container_extra_volumes }}"
+pixelfed_container_labels: "{{ pixelfed_container_base_labels + pixelfed_container_extra_labels }}"
+pixelfed_container_env: "{{ pixelfed_container_base_env + pixelfed_container_extra_env }}"
+
+pixelfed_source_upstream_git_repo: "https://github.com/pixelfed/pixelfed.git"
+
+pixelfed_supported_deployment_methods:
+  - docker_selfbuilt
+  - docker_pulled
+
+
+# pixelfed app config
+pixelfed_config:
+  APP_KEY: "{{ pixelfed_config_app_key }}"
+  APP_NAME: "{{ pixelfed_config_app_name }}"
+  APP_ENV: "{{ pixelfed_config_app_env }}"
+  APP_DEBUG: "{{ pixelfed_config_app_debug }}"
+  APP_URL: "{{ pixelfed_config_app_url }}"
+  APP_DOMAIN: "{{ pixelfed_config_app_domain }}"
+  ADMIN_DOMAIN: "{{ pixelfed_config_app_admin_domain }}"
+  SESSION_DOMAIN: "{{ pixelfed_config_session_domain }}"
+
+  OPEN_REGISTRATION: "{{ pixelfed_config_open_registration }}"
+  ENFORCE_EMAIL_VERIFICATION: "{{ pixelfed_config_enforce_email_verification }}"
+  PF_MAX_USERS: "{{ pixelfed_config_pf_max_users }}"
+  OAUTH_ENABLED: "{{ pixelfed_config_oauth_enabled }}"
+
+  APP_TIMEZONE: "{{ pixelfed_config_app_timezone }}"
+  APP_LOCALE: "{{ pixelfed_config_all_locale }}"
+
+  LIMIT_ACCOUNT_SIZE: "{{ pixelfed_config_limit_account_size }}"
+  MAX_ACCOUNT_SIZE: "{{ pixelfed_config_max_account_size }}"
+  MAX_PHOTO_SIZE: "{{ pixelfed_config_ }}"
+  MAX_AVATAR_SIZE: "{{ pixelfed_config_ }}"
+  MAX_CAPTION_LENGTH: "{{ pixelfed_config_ }}"
+  MAX_BIO_LENGTH:  "{{ pixelfed_config_ }}"
+  MAX_NAME_LENGTH:  "{{ pixelfed_config_ }}"
+  MAX_ALBUM_LENGTH:  "{{ pixelfed_config_ }}"
+  IMAGE_QUALITY:  "{{ pixelfed_config_ }}"
+  PF_OPTIMIZE_IMAGES:  "{{ pixelfed_config_ }}"
+  PF_OPTIMIZE_VIDEOS:  "{{ pixelfed_config_ }}"
+  ADMIN_ENV_EDITOR:  "{{ pixelfed_config_ }}"
+  ACCOUNT_DELETION:  "{{ pixelfed_config_ }}"
+  ACCOUNT_DELETE_AFTER:  "{{ pixelfed_config_ }}"
+  MAX_LINKS_PER_POST:    "{{ pixelfed_config_ }}"
+
+  INSTANCE_DESCRIPTION: "{{ pixelfed_config_instance_description }}"
+  INSTANCE_PUBLIC_HASHTAGS: "{{ pixelfed_config_instance_public_hashtags }}"
+  INSTANCE_CONTACT_EMAIL: "{{ pixelfed_config_instance_contact_email }}"
+  INSTANCE_PUBLIC_LOCAL_TIMELINE: "{{ pixelfed_config_instance_public_local_timeline }}"
+  BANNED_USERNAMES: "{{ pixelfed_config_banned_usernames }}"
+  STORIES_ENABLED: "{{ pixelfed_config_stories_enabled }}"
+  RESTRICTED_INSTANCE: "{{ pixelfed_config_restricted_instance }}"
+  
+  ## Mail
+  MAIL_DRIVER: "{{ pixelfed_config_mail_driver }}"
+  MAIL_HOST: "{{ pixelfed_config_mail_host }}"
+  MAIL_PORT: "{{ pixelfed_config_mail_port }}"
+  MAIL_FROM_ADDRESS: "{{ pixelfed_config_mail_from_address }}"
+  MAIL_FROM_NAME: "{{ pixelfed_config_mail_from_name }}"
+  MAIL_USERNAME: "{{ pixelfed_config_mail_username }}"
+  MAIL_PASSWORD: "{{ pixelfed_config_mail_password }}"
+  MAIL_ENCRYPTION: "{{ pixelfed_config_mail_encryption }}"
+  
+  ## Databases (MySQL)
+  DB_CONNECTION: "{{ pixelfed_config_db_connection }}"
+  DB_DATABASE: "{{ pixelfed_config_db_database }}"
+  DB_HOST: "{{ pixelfed_config_db_host }}"
+  DB_PASSWORD: "{{ pixelfed_config_db_password }}"
+  DB_PORT: "{{ pixelfed_config_db_port }}"
+  DB_USERNAME: "{{ pixelfed_config_db_username }}"
+ 
+  ## Cache (Redis)
+  REDIS_CLIENT: "{{ pixelfed_config_redis_client }}"
+  REDIS_SCHEME: "{{ pixelfed_config_redis_scheme }}"
+  REDIS_HOST: "{{ pixelfed_config_redis_host }}"
+  REDIS_PASSWORD: "{{ pixelfed_config_redis_password }}"
+  REDIS_PORT: "{{ pixelfed_config_redis_port }}"
+  REDIS_DATABASE: "{{ pixelfed_config_redis_database }}"
+  
+  ## EXPERIMENTS 
+  EXP_LC: "{{ pixelfed_config_exp_lc }}"
+  EXP_REC: "{{ pixelfed_config_exp_rec }}"
+  EXP_LOOPS: "{{ pixelfed_config_exp_loops }}"
+  
+  ## ActivityPub Federation
+  ACTIVITY_PUB: "{{ pixelfed_config_activity_pub }}"
+  AP_REMOTE_FOLLOW: "{{ pixelfed_config_ap_remote_follow }}"
+  AP_SHAREDINBOX: "{{ pixelfed_config_ap_sharedinbox }}"
+  AP_INBOX: "{{ pixelfed_config_ap_inbox }}"
+  AP_OUTBOX: "{{ pixelfed_config_ap_outbox }}"
+  ATOM_FEEDS: "{{ pixelfed_config_atom_feeds }}"
+  NODEINFO: "{{ pixelfed_config_nodeinfo }}"
+  WEBFINGER: "{{ pixelfed_config_webfinger }}"
+  
+  ## S3
+  FILESYSTEM_DRIVER: "{{ pixelfed_config_filesystem_driver }}"
+  FILESYSTEM_CLOUD: "{{ pixelfed_config_filesystem_cloud }}"
+  PF_ENABLE_CLOUD: "{{ pixelfed_config_pf_enable_cloud }}"
+  AWS_ACCESS_KEY_ID: "{{ pixelfed_config_aws_access_key_id }}"
+  AWS_SECRET_ACCESS_KEY: "{{ pixelfed_config_aws_secret_access_key }}"
+  AWS_DEFAULT_REGION: "{{ pixelfed_config_aws_default_region }}"
+  AWS_BUCKET: "{{ pixelfed_config_aws_bucket }}"
+  AWS_URL: "{{ pixelfed_config_aws_url }}"
+  AWS_ENDPOINT: "{{ pixelfed_config_aws_endpoint }}"
+  AWS_USE_PATH_STYLE_ENDPOINT: "{{ pixelfed_config_aws_use_path_style_endpoint }}"
+  
+  HORIZON_DARKMODE: "{{ pixelfed_config_horizon_darkmode }}"
+  PF_COSTAR_ENABLED: "{{ pixelfed_config_pf_costar_enabled }}"
+  MEDIA_EXIF_DATABASE: "{{ pixelfed_config_media_exif_database }}"
+  LOG_CHANNEL: "{{ pixelfed_config_log_channel }}"
+  IMAGE_DRIVER: "{{ pixelfed_config_image_driver }}"
+  
+  BROADCAST_DRIVER: "{{ pixelfed_config_ }}"
+  CACHE_DRIVER: "{{ pixelfed_config_cache_driver }}"
+  RESTRICT_HTML_TYPES: "{{ 'true' pixelfed_config_restrict_html_types else 'false' }}"
+  QUEUE_DRIVER: "{{ pixelfed_config_queue_driver }}"
+  SESSION_DRIVER: "{{ pixelfed_config_session_driver }}"
+  TRUST_PROXIES: "{{ pixelfed_config_trust_proxies }}"
+  PASSPORT_PRIVATE_KEY: "{{ pixelfed_config_passport_private_key }}"
+  PASSPORT_PUBLIC_KEY: "{{ pixelfed_config_passport_public_key }}"
+

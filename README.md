@@ -9,6 +9,9 @@ available.
 
 ## Roles
 
+- [`mastodon`](roles/mastodon/README.md): deployment using a container based
+  setup, able to use webfinger delegation.
+
 ## License
 
 [CNPLv7+](LICENSE.md): Cooperative Nonviolent Public License

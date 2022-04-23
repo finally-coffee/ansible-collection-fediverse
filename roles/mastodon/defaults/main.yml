@@ -1,0 +1,106 @@
+---
+
+mastodon_user: mastodon
+mastodon_base_path: /opt/mastodon
+mastodon_domain: ~
+mastodon_web_domain: ~
+mastodon_version: 3.5.1
+mastodon_git_upstream_url: "https://github.com/mastodon/mastodon.git"
+
+mastodon_data_path: "{{ mastodon_base_path }}/data"
+mastodon_repo_path: "{{ mastodon_base_path }}/src"
+mastodon_config_path: "{{ mastodon_base_path }}/config"
+mastodon_config_env_file: "{{ mastodon_config_path }}/env.production"
+mastodon_nginx_config_path: "{{ mastodon_base_path }}/nginx-config"
+mastodon_nginx_config_file: "{{ mastodon_nginx_config_path }}/nginx.conf"
+mastodon_nginx_cache_path: "{{ mastodon_base_path }}/nginx-cache"
+
+mastodon_container_bind_ip: "127.0.0.1"
+mastodon_streaming_backend: "{{ mastodon_container_bind_ip }}:4000"
+mastodon_api_backend: "{{ mastodon_container_bind_ip }}:3000"
+mastodon_backend: "{{ mastodon_container_bind_ip }}:5000"
+
+mastodon_container_name: mastodon
+mastodon_container_name_sidekiq: "{{ mastodon_container_name }}_sidekiq"
+mastodon_container_name_streaming: "{{ mastodon_container_name }}_streaming"
+mastodon_container_image_name: "tootsuite/mastodon"
+mastodon_container_image_tag: "v{{ mastodon_version }}"
+mastodon_container_image_ref: "{{ mastodon_container_image_name }}:{{ mastodon_container_image_tag }}"
+mastodon_container_networks:
+  - name: "{{ mastodon_container_network_name }}"
+
+mastodon_container_base_volumes_streaming: []
+mastodon_container_extra_volumes_streaming: "{{ mastodon_container_extra_volumes }}"
+mastodon_container_volumes_streaming: >-
+  {{ mastodon_container_base_volumes_streaming + mastodon_container_extra_volumes_streaming }}
+
+mastodon_container_base_volumes_sidekiq:
+  - "{{ mastodon_repo_path }}/public/system:/mastodon/public/system:ro"
+mastodon_container_extra_volumes_sidekiq: "{{ mastodon_container_extra_volumes }}"
+mastodon_container_volumes_sidekiq: >-
+  {{ mastodon_container_base_volumes_sidekiq + mastodon_container_extra_volumes_sidekiq }}
+
+mastodon_container_base_volumes:
+  - "{{ mastodon_repo_path }}/public:/mastodon/public:z"
+mastodon_container_extra_volumes: []
+mastodon_container_volumes: >-
+  {{ mastodon_container_base_volumes + mastodon_container_extra_volumes }}
+
+mastodon_container_ports_streaming:
+  - "{{ mastodon_streaming_backend }}:4000"
+mastodon_container_ports:
+  - "{{ mastodon_api_backend }}:3000"
+mastodon_container_restart_policy: unless-stopped
+
+mastodon_nginx_version: 1.21.6
+mastodon_nginx_server_name: "{{ mastodon_domain }}"
+mastodon_container_nginx_name: "{{ mastodon_container_name }}_nginx"
+mastodon_container_nginx_image_name: docker.io/library/nginx
+mastodon_container_nginx_image_tag: ~
+mastodon_container_nginx_image_flavour: alpine
+mastodon_container_nginx_image: >-2
+  {{ mastodon_container_nginx_image_name }}:{{ mastodon_container_nginx_image_tag
+  | default(mastodon_nginx_version + ('-' + mastodon_container_nginx_image_flavour if mastodon_container_nginx_image_flavour else ''), True) }}
+mastodon_container_nginx_working_directory: "/var/www/mastodon"
+mastodon_container_nginx_cache_directory: "/var/cache/nginx"
+mastodon_container_volumes_nginx:
+  - "{{ mastodon_nginx_config_file }}:/etc/nginx/conf.d/default.conf:ro"
+  - "{{ mastodon_repo_path }}/public:{{ mastodon_container_nginx_working_directory }}:ro"
+  - "{{ mastodon_nginx_cache_path }}:{{ mastodon_container_nginx_cache_directory }}:z"
+
+mastodon_container_network_name: mastodon
+
+mastodon_secret_key: ~
+mastodon_otp_secret: ~
+mastodon_vapid_public_key: ~
+mastodon_vapid_private_key: ~
+
+mastodon_redis_host: ~
+mastodon_redis_port: ~
+mastodon_redis_url: ~
+mastodon_redis_password: ~
+mastodon_redis_db_index: ~
+
+mastodon_database_host: localhost
+mastodon_database_port: 5432
+mastodon_database_user: mastodon
+mastodon_database_pass: ~
+mastodon_database_name: mastodon
+
+mastodon_mail_server: ~
+mastodon_mail_port: 587
+mastodon_mail_user: ~
+mastodon_mail_password: ~
+mastodon_mail_from_address: "notifications@{{ mastodon_domain }}"
+
+mastodon_elasticsearch_enabled: false
+mastodon_elasticsearch_host: ~
+mastodon_elasticsearch_port: ~
+mastodon_elasticsearch_user: ~
+mastodon_elasticsearch_pass: ~
+
+mastodon_s3_enabled: false
+mastodon_s3_bucket: ~
+mastodon_s3_aws_access_key_id: ~
+mastodon_s3_aws_secret_access_key: ~
+mastodon_s3_alias_host: ~

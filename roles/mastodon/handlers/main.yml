@@ -1,0 +1,33 @@
+---
+
+- name: Restart mastodon sidekiq
+  docker_container:
+    name: "{{ mastodon_container_name_sidekiq }}"
+    state: started
+    restart: true
+  listen:
+    - restart-mastodon
+    - restart-mastodon-sidekiq
+
+- name: Restart mastodon streaming
+  docker_container:
+    name: "{{ mastodon_container_name_streaming }}"
+    state: started
+    restart: true
+  listen:
+    - restart-mastodon
+    - restart-mastodon-streaming
+
+- name: Restart mastodon web
+  docker_container:
+    name: "{{ mastodon_container_name }}"
+    state: started
+    restart: true
+  listen: restart-mastodon
+
+- name: Restart mastodon nginx
+  docker_container:
+    name: "{{ mastodon_container_nginx_name }}"
+    state: started
+    restart: true
+  listen: restart-mastodon-nginx

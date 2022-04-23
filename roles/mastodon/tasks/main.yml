@@ -1,0 +1,176 @@
+---
+
+- name: Ensure mastodon user '{{ mastodon_user }}' exists
+  user:
+    name: "{{ mastodon_user }}"
+    state: present
+    system: true
+  register: mastodon_user_info
+
+- name: Ensure host directories are present
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default(mastodon_user) }}"
+    group: "{{ item.group | default(mastodon_user) }}"
+    mode: "{{ item.mode | default('0750') }}"
+  loop:
+    - path: "{{ mastodon_base_path }}"
+      mode: '0755'
+    - path: "{{ mastodon_config_path }}"
+    - path: "{{ mastodon_data_path }}"
+    - path: "{{ mastodon_repo_path }}"
+      mode: '0700'
+    - path: "{{ mastodon_nginx_config_path }}"
+    - path: "{{ mastodon_nginx_cache_path }}"
+  loop_control: { label: "{{ item.path }}" }
+
+- name: Ensure environment file is templated
+  template:
+    src: env.j2
+    dest: "{{ mastodon_config_env_file }}"
+    owner: "{{ mastodon_user_info.uid | default(mastodon_user) }}"
+    group: "{{ mastodon_user_info.group | default(mastodon_user) }}"
+    mode: "0640"
+  notify: restart-mastodon
+
+- name: Ensure reverse proxy configuration is templated
+  template:
+    src: nginx.conf.j2
+    dest: "{{ mastodon_nginx_config_file }}"
+    owner: "{{ mastodon_user_info.uid | default(mastodon_user) }}"
+    group: "{{ mastodon_user_info.group | default(mastodon_user) }}"
+    mode: "0640"
+  notify: restart-mastodon-nginx
+
+- name: Ensure mastodon git repository is present and up-to-date
+  git:
+    repo: "{{ mastodon_git_upstream_url }}"
+    dest: "{{ mastodon_repo_path }}"
+    refspec: "v{{ mastodon_version }}"
+    version: "v{{ mastodon_version }}"
+    force: no
+    recursive: yes
+    track_submodules: yes
+  register: git_repo_info
+
+- name: Ensure mastodon git repository and children belong to {{ mastodon_user }}
+  file:
+    path: "{{ mastodon_repo_path }}"
+    state: directory
+    recurse: yes
+    owner: "{{ mastodon_user }}"
+    group: "{{ mastodon_user }}"
+
+- name: Ensure docker network for backend communication is created
+  docker_network:
+    name: "{{ mastodon_container_network_name }}"
+    state: present
+
+- name: Ensure mastodon docker image is built
+  docker_image:
+    name: "{{ mastodon_container_image_name }}"
+    tag: "{{ mastodon_container_image_tag }}"
+    state: present
+    source: build
+    build:
+      path: "{{ mastodon_repo_path }}"
+      args:
+        UID: "{{ mastodon_user_info.uid }}"
+        GID: "{{ mastodon_user_info.group }}"
+  when: git_repo_info.before != git_repo_info.after
+
+- name: Ensure nginx reverse proxy image is present
+  docker_image:
+    name: "{{ mastodon_container_nginx_image }}"
+    state: present
+    source: pull
+    force_source: "{{ mastodon_container_nginx_image_tag|default(false, true) | bool }}"
+  register: masto_nginx_pull
+  until: masto_nginx_pull is succeeded
+  retries: 5
+  delay: 3
+
+- name: Ensure database is seeded
+  docker_container:
+    name: "{{ mastodon_container_name }}_setup_db"
+    image: "{{ mastodon_container_image_ref }}"
+    networks: "{{ mastodon_container_networks }}"
+    volumes: "{{ mastodon_container_volumes }}"
+    env_file: "{{ mastodon_config_env_file }}" 
+    command: "bash -c \"bundle exec rails db:setup\""
+    tty: yes
+    interactive: yes
+    detach: no
+    cleanup: yes
+  when: mastodon_seed_database|default(false, true)
+
+- name: Ensure mastodon sidekiq container '{{ mastodon_container_name_sidekiq }}' is running
+  docker_container:
+    name: "{{ mastodon_container_name_sidekiq }}"
+    image: "{{ mastodon_container_image_ref }}"
+    networks: "{{ mastodon_container_networks }}"
+    volumes: "{{ mastodon_container_volumes_sidekiq }}"
+    env_file: "{{ mastodon_config_env_file }}" 
+    command: "bundle exec sidekiq"
+    restart_policy: "{{ mastodon_container_restart_policy }}"
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep '[s]idekiq\ 6' || false"]
+      interval: 5s
+      retries: 3
+      start_period: 0s
+      timeout: 5s
+
+- name: Ensure mastodon streaming container '{{ mastodon_container_name_streaming }}' is running
+  docker_container:
+    name: "{{ mastodon_container_name_streaming }}"
+    image: "{{ mastodon_container_image_ref }}"
+    networks: "{{ mastodon_container_networks }}"
+    volumes: "{{ mastodon_container_volumes_streaming }}"
+    env_file: "{{ mastodon_config_env_file }}" 
+    command: "node ./streaming"
+    restart_policy: "{{ mastodon_container_restart_policy }}"
+    ports: "{{ mastodon_container_ports_streaming }}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1"]
+      interval: 5s
+      retries: 3
+      start_period: 0s
+      timeout: 5s
+
+- name: Ensure mastodon container '{{ mastodon_container_name }}' is running
+  docker_container:
+    name: "{{ mastodon_container_name }}"
+    image: "{{ mastodon_container_image_ref }}"
+    networks: "{{ mastodon_container_networks }}"
+    volumes: "{{ mastodon_container_volumes }}"
+    env_file: "{{ mastodon_config_env_file }}" 
+    command: "bash -c \"rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000\""
+    restart_policy: "{{ mastodon_container_restart_policy }}"
+    ports: "{{ mastodon_container_ports }}"
+    user: "{{ mastodon_user }}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:3000/health || exit 1"]
+      interval: 5s
+      retries: 3
+      start_period: 0s
+      timeout: 5s
+
+- name: Ensure mastodon-nginx container '{{ mastodon_container_nginx_name }}' is running
+  docker_container:
+    name: "{{ mastodon_container_nginx_name }}"
+    image: "{{ mastodon_container_nginx_image }}"
+    network_mode: host
+    volumes: "{{ mastodon_container_volumes_nginx }}"
+    restart_policy: "{{ mastodon_container_restart_policy }}"
+
+- name: Ensure assets are precompiled
+  docker_container:
+    name: "{{ mastodon_container_name }}"
+    env_file: "{{ mastodon_config_env_file }}"
+    command: "bash -c \"bundle exec rails assets:precompile\""
+    user: "{{ mastodon_user }}"
+    tty: yes
+    interactive: yes
+    detach: no
+  when: git_repo_info.before != git_repo_info.after

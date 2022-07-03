@@ -1,0 +1,120 @@
+---
+
+gotosocial_user: "gotosocial"
+gotosocial_version: 0.3.6
+gotosocial_base_path: "/opt/gotosocial"
+gotosocial_config_path: "{{ gotosocial_base_path }}/config"
+gotosocial_template_path: "{{ gotosocial_base_path }}/templates"
+gotosocial_asset_path: "{{ gotosocial_base_path }}/assets"
+gotosocial_storage_path: "{{ gotosocial_base_path }}/storage"
+gotosocial_config_file: "{{ gotosocial_config_path }}/config.yaml"
+
+gotosocial_config: >-
+  {{ gotosocial_default_config
+  | combine(gotosocial_extra_config, recursive=True) }}
+
+gotosocial_config_log_level: info
+gotosocial_config_log_db_queries: false
+gotosocial_config_host: social.example.party
+gotosocial_config_account_domain: ~
+
+# listening / revproxy configuration
+gotosocial_config_protocol: https
+gotosocial_config_bind_address: 127.0.0.1
+gotosocial_config_port: 8080
+gotosocial_config_trusted_proxies: []
+
+# database configuration
+gotosocial_config_db_type: postgres
+gotosocial_config_db_address: ~
+gotosocial_config_db_port: ~
+gotosocial_config_db_user: ~
+gotosocial_config_db_password: ~
+gotosocial_config_db_database: gotosocial
+gotosocial_config_db_tls_mode: enable
+gotosocial_config_db_tls_ca_cert:
+
+gotosocial_config_web_template_base_dir: "{{ gotosocial_template_path }}"
+gotosocial_config_web_asset_base_dir: "{{ gotosocial_asset_path }}"
+
+# instance privacy
+gotosocial_config_instance_expose_peers: false
+gotosocial_config_expose_suspended: false
+
+# account config
+gotosocial_config_acounts_registration_open: true
+gotosocial_config_accounts_approval_required: true
+gotosocial_config_accounts_reason_required: true
+
+# media config
+gotosocial_config_media_image_max_size_bytes: 2097152 #2MB
+gotosocial_config_media_video_max_size_bytes: 10485760 #10MB
+gotosocial_config_media_description_min_chars: 0
+gotosocial_config_media_description_max_chars: 1000
+gotosocial_config_media_remote_cache_days: 30
+
+# storage for media etc
+gotosocial_config_storage_backend: local
+gotosocial_config_storage_local_base_path: "{{ gotosocial_storage_path }}"
+
+# status config
+gotosocial_config_statuses_max_chars: 5000
+gotosocial_config_statuses_cw_max_chars: 100
+gotosocial_config_statuses_poll_max_options: 6
+gotosocial_config_statuses_poll_option_max_chars: 50
+gotosocial_config_statuses_media_max_files: 30
+
+# letsencrypt config
+gotosocial_config_letsencrypt_enabled: false
+gotosocial_config_letsencrypt_port: 80
+gotosocial_config_letsencrypt_cert_dir: "{{ gotosocial_cert_path }}"
+gotosocial_config_letsencrypt_email_address: ~
+
+# oidc config
+gotosocial_config_oidc_enabled: false
+gotosocial_config_oidc_idp_name: ~
+gotosocial_config_oidc_skip_verification: false
+gotosocial_config_oidc_issuer: ~
+gotosocial_config_oidc_client_id: ~
+gotosocial_config_oidc_client_secret: ~
+gotosocial_config_oidc_scopes:
+  - openid
+  - email
+  - profile
+
+# smtp config
+gotosocial_config_smtp_host: ~
+gotosocial_config_smtp_port: ~
+gotosocial_config_smtp_username: ~
+gotosocial_config_smtp_password: ~
+gotosocial_config_smtp_from: ~
+
+# syslog config
+gotosocial_config_syslog_enabled: false
+gotosocial_config_syslog_protocol: udp
+gotosocial_config_syslog_address: "localhost:514"
+
+# advanced config:
+gotosocial_config_advanced_cookies_samesite: lax
+
+# container defaults
+gotosocial_container_name: gotosocial
+gotosocial_container_image_name: docker.io/superseriousbusiness/gotosocial
+gotosocial_container_image_tag: ~
+gotosocial_container_image: >-2
+  {{ gotosocial_container_image_name }}:{{ gotoscial_container_image_tag
+  | default(gotosocial_version) }}
+gotosocial_container_volumes: >-2
+  {{ gotosocial_container_default_volumes
+  + gotosocial_container_extra_volumes }}
+gotosocial_container_default_volumes:
+  - "{{ gotosocial_storage_path }}:/gotosocial/storage:z"
+gotosocial_container_extra_volumes: []
+
+gotosocial_container_env: {}
+gotosocial_container_labels: {}
+gotosocial_container_user: "{{ gotosocial_user }}"
+gotosocial_container_etc_hosts: ~
+gotosocial_container_networks: ~
+gotosocial_container_purge_networks: false
+gotosocial_container_restart_policy: unless_stopped

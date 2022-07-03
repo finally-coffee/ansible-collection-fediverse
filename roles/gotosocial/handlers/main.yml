@@ -1,0 +1,8 @@
+---
+
+- name: Restart gotosocial
+  listen: restart-gotosocial
+  docker_container:
+    name: "{{ gotosocial_container_name }}"
+    state: started
+    restart: true

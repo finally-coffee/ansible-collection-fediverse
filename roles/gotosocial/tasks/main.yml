@@ -1,0 +1,62 @@
+---
+
+- name: Ensure user {{ gotosocial_user }} is present
+  user:
+    name: "{{ gotosocial_user }}"
+    system: true
+    state: present
+  register: gotosocial_user_info
+
+- name: Ensure host directories for mounts are present
+  file:
+    path: "{{ path.name }}"
+    state: directory
+    owner: >-
+      {{ path.owner | default(gotosocial_user_info.uid | default(gotosocial_user)) }}
+    group: >-
+      {{ path.group | default(gotosocial_user_info.group | default(gotosocial_user)) }}
+    mode: "{{ path.mode | default('0750') }}"
+  loop:
+    - name: "{{ gotosocial_base_path }}"
+    - name: "{{ gotosocial_config_path }}"
+    - name: "{{ gotosocial_storage_path }}"
+      mode: '0770'
+  loop_control:
+    loop_var: path
+    label: "{{ path.name }}"
+
+- name: Ensure configuration is up to date
+  copy:
+    content: "{{ gotosocial_config | to_nice_yaml(indent=2, max_with=10000) }}"
+    dest: "{{ gotosocial_config_file }}"
+    owner: "{{ gotosocial_user_info.uid | default(gotosocial_user) }}"
+    group: "{{ gotosocial_user_info.group | default(gotosocial_user) }}"
+    mode: 0640
+  notify: restart-gotosocial
+
+- name: Ensure container image is available
+  docker_image:
+    image: "{{ gotosocial_container_image }}"
+    state: present
+    source: pull
+    force_source: >-
+      {{ gotosocial_container_image_force_pull
+      | default(gotoscial_container_image_tag | default(true, true)) }}
+  register: gotosocial_container_image_pull_status
+  until: gotosocial_container_image_pull_status is succeeded
+  retries: 5
+  delay: 3
+
+- name: Ensure gotosocial container named {{ gotosocial_container_name }} is running
+  docker_container:
+    name: "{{ gotosocial_container_name }}"
+    image: "{{ gotosocial_container_image }}"
+    volumes: "{{ gotosocial_container_volumes }}"
+    env: "{{ gotosocial_container_env | default(omit, True) }}"
+    ports: "{{ gotosocial_container_ports | default(omit, True) }}"
+    labels: "{{ gotosocial_container_labels | default(omit, True }}"
+    networks: "{{ gotosocial_container_networks | default(omit, True) }}"
+    etc_hosts: "{{ gotosocial_container_etc_hosts | default(omit, True) }}"
+    purge_networks: "{{ gotosocial_container_purge_networks | default(False, True) }}"
+    restart_policy: "{{ gotosocial_container_restart_policy }}"
+    state: started

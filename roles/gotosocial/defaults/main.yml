@@ -7,11 +7,12 @@ gotosocial_config_path: "{{ gotosocial_base_path }}/config"
 gotosocial_template_path: "{{ gotosocial_base_path }}/templates"
 gotosocial_asset_path: "{{ gotosocial_base_path }}/assets"
 gotosocial_storage_path: "{{ gotosocial_base_path }}/storage"
+gotosocial_cert_path: "{{ gotosocial_base_path }}/certificates"
 gotosocial_config_file: "{{ gotosocial_config_path }}/config.yaml"
 
 gotosocial_config: >-
   {{ gotosocial_default_config
-  | combine(gotosocial_extra_config, recursive=True) }}
+  | combine(gotosocial_extra_config | default({}), recursive=True) }}
 
 gotosocial_config_log_level: info
 gotosocial_config_log_db_queries: false
@@ -108,6 +109,7 @@ gotosocial_container_volumes: >-2
   {{ gotosocial_container_default_volumes
   + gotosocial_container_extra_volumes }}
 gotosocial_container_default_volumes:
+  - "{{ gotosocial_config_file }}:/gotosocial/config.yaml:ro"
   - "{{ gotosocial_storage_path }}:/gotosocial/storage:z"
 gotosocial_container_extra_volumes: []
 
@@ -117,4 +119,11 @@ gotosocial_container_user: "{{ gotosocial_user }}"
 gotosocial_container_etc_hosts: ~
 gotosocial_container_networks: ~
 gotosocial_container_purge_networks: false
-gotosocial_container_restart_policy: unless_stopped
+gotosocial_container_restart_policy: unless-stopped
+gotosocial_container_entrypoint:
+  - "/gotosocial/gotosocial"
+  - "--config-path"
+  - "config.yaml"
+  - "server"
+  - "start"
+

@@ -11,6 +11,7 @@ gotosocial_default_config:
   port: "{{ gotosocial_config_port }}"
   trusted-proxies: "{{ gotosocial_config_trusted_proxies }}"
   db-type: "{{ gotosocial_config_db_type }}"
+  db-address: "{{ gotosocial_config_db_address }}"
   db-port: "{{ gotosocial_config_db_port }}"
   db-user: "{{ gotosocial_config_db_user }}"
   db-password: "{{ gotosocial_config_db_password }}"

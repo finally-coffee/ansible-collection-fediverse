@@ -20,6 +20,8 @@
     - name: "{{ gotosocial_base_path }}"
     - name: "{{ gotosocial_config_path }}"
     - name: "{{ gotosocial_storage_path }}"
+    - name: "{{ gotosocial_template_path }}"
+    - name: "{{ gotosocial_asset_path }}"
       mode: '0770'
   loop_control:
     loop_var: path

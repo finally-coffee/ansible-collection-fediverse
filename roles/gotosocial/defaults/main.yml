@@ -1,7 +1,7 @@
 ---
 
 gotosocial_user: "gotosocial"
-gotosocial_version: 0.3.6
+gotosocial_version: 0.3.8
 gotosocial_base_path: "/opt/gotosocial"
 gotosocial_config_path: "{{ gotosocial_base_path }}/config"
 gotosocial_template_path: "{{ gotosocial_base_path }}/templates"
@@ -111,6 +111,7 @@ gotosocial_container_volumes: >-2
 gotosocial_container_default_volumes:
   - "{{ gotosocial_config_file }}:/gotosocial/config.yaml:ro"
   - "{{ gotosocial_storage_path }}:/gotosocial/storage:z"
+  - "{{ gotosocial_template_path }}:/gotosocial/web/templates:ro"
 gotosocial_container_extra_volumes: []
 
 gotosocial_container_env: {}

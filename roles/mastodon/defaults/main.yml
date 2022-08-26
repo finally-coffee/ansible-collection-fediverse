@@ -11,6 +11,8 @@ mastodon_data_path: "{{ mastodon_base_path }}/data"
 mastodon_repo_path: "{{ mastodon_base_path }}/src"
 mastodon_config_path: "{{ mastodon_base_path }}/config"
 mastodon_config_env_file: "{{ mastodon_config_path }}/env.production"
+mastodon_config_group_file: "{{ mastodon_config_path }}/mastodon-group"
+mastodon_config_passwd_file: "{{ mastodon_config_path }}/mastodon-passwd"
 mastodon_nginx_config_path: "{{ mastodon_base_path }}/nginx-config"
 mastodon_nginx_config_file: "{{ mastodon_nginx_config_path }}/nginx.conf"
 mastodon_nginx_cache_path: "{{ mastodon_base_path }}/nginx-cache"
@@ -29,7 +31,9 @@ mastodon_container_image_ref: "{{ mastodon_container_image_name }}:{{ mastodon_c
 mastodon_container_networks:
   - name: "{{ mastodon_container_network_name }}"
 
-mastodon_container_base_volumes_streaming: []
+mastodon_container_base_volumes_streaming:
+  - "{{ mastodon_config_passwd_file }}:/etc/passwd:ro"
+  - "{{ mastodon_config_group_file }}:/etc/group:ro"
 mastodon_container_extra_volumes_streaming: "{{ mastodon_container_extra_volumes }}"
 mastodon_container_volumes_streaming: >-
   {{ mastodon_container_base_volumes_streaming + mastodon_container_extra_volumes_streaming }}
@@ -42,6 +46,8 @@ mastodon_container_volumes_sidekiq: >-
 
 mastodon_container_base_volumes:
   - "{{ mastodon_repo_path }}/public:/mastodon/public:z"
+  - "{{ mastodon_config_passwd_file }}:/etc/passwd:ro"
+  - "{{ mastodon_config_group_file }}:/etc/group:ro"
 mastodon_container_extra_volumes: []
 mastodon_container_volumes: >-
   {{ mastodon_container_base_volumes + mastodon_container_extra_volumes }}

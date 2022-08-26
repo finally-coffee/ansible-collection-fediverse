@@ -43,6 +43,24 @@
     mode: "0640"
   notify: restart-mastodon-nginx
 
+- name: Ensure fake passwd file is templated
+  template:
+    src: passwd.j2
+    dest: "{{ mastodon_config_passwd_file }}"
+    owner: "{{ mastodon_user_info.uid | default(mastodon_user) }}"
+    group: "{{ mastodon_user_info.group | default(mastodon_user) }}"
+    mode: "0644"
+  notify: restart-mastodon
+
+- name: Ensure fake passwd file is templated
+  template:
+    src: group.j2
+    dest: "{{ mastodon_config_group_file }}"
+    owner: "{{ mastodon_user_info.uid | default(mastodon_user) }}"
+    group: "{{ mastodon_user_info.group | default(mastodon_user) }}"
+    mode: "0644"
+  notify: restart-mastodon
+
 - name: Ensure mastodon git repository is present and up-to-date
   git:
     repo: "{{ mastodon_git_upstream_url }}"
@@ -52,6 +70,8 @@
     force: no
     recursive: yes
     track_submodules: yes
+  become: yes
+  become_user: "{{ mastodon_user }}"
   register: git_repo_info
 
 - name: Ensure mastodon git repository and children belong to {{ mastodon_user }}
@@ -131,6 +151,7 @@
     command: "node ./streaming"
     restart_policy: "{{ mastodon_container_restart_policy }}"
     ports: "{{ mastodon_container_ports_streaming }}"
+    user: "{{ mastodon_user }}"
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1"]
       interval: 5s
@@ -148,13 +169,19 @@
     command: "bash -c \"rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000\""
     restart_policy: "{{ mastodon_container_restart_policy }}"
     ports: "{{ mastodon_container_ports }}"
-    user: "{{ mastodon_user }}"
+    user: "{{ mastodon_user_info.uid }}:{{ mastodon_user_info.group }}"
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:3000/health || exit 1"]
       interval: 5s
       retries: 3
       start_period: 0s
       timeout: 5s
+
+- name: Ensure container paths belong to the mastodon user
+  community.docker.docker_container_exec:
+    container: "{{ mastodon_container_name }}"
+    command: "chown -R {{ mastodon_user_info.uid }}:{{ mastodon_user_info.group }} /opt/mastodon"
+    user: "0"
 
 - name: Ensure mastodon-nginx container '{{ mastodon_container_nginx_name }}' is running
   docker_container:
@@ -165,12 +192,7 @@
     restart_policy: "{{ mastodon_container_restart_policy }}"
 
 - name: Ensure assets are precompiled
-  docker_container:
-    name: "{{ mastodon_container_name }}"
-    env_file: "{{ mastodon_config_env_file }}"
-    command: "bash -c \"bundle exec rails assets:precompile\""
-    user: "{{ mastodon_user }}"
-    tty: yes
-    interactive: yes
-    detach: no
+  community.docker.docker_container_exec:
+    container: "{{ mastodon_container_name }}"
+    command: "bundle exec rails assets:precompile"
   when: git_repo_info.before != git_repo_info.after

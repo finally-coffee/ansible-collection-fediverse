@@ -110,3 +110,24 @@ mastodon_s3_bucket: ~
 mastodon_s3_aws_access_key_id: ~
 mastodon_s3_aws_secret_access_key: ~
 mastodon_s3_alias_host: ~
+
+mastodon_oidc_enabled: false
+mastodon_oidc_issuer_url: ~
+mastodon_oidc_discovery: true
+mastodon_oidc_scope: openid,profile
+mastodon_oidc_client_id: ~
+mastodon_oidc_client_secret: ~
+mastodon_oidc_client_auth_method: basic
+mastodon_oidc_response_mode: query
+mastodon_oidc_response_type: code
+mastodon_oidc_prompt: ~
+mastodon_oidc_display_name: My IDP
+mastodon_oidc_auth_endpoint: ~
+mastodon_oidc_token_endpoint: ~
+mastodon_oidc_user_info_endpoint: ~
+mastodon_oidc_end_session_endpoint: ~
+mastodon_oidc_jwks_uri:
+mastodon_oidc_redirect_uri:
+mastodon_oidc_idp_logout_redirect_uri: ~
+mastodon_oidc_uid_field: preferred_username
+mastodon_oidc_security_assume_email_is_verified: false

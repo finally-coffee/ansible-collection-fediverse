@@ -9,6 +9,9 @@ available.
 
 ## Roles
 
+- [`gotosocial`](roles/gotosocial/README.md): deployment of [GoToSocial.org](https://gotosocial.org/),
+  an ActivityPub social network server, in a docker container.
+
 - [`mastodon`](roles/mastodon/README.md): deployment using a container based
   setup, able to use webfinger delegation.
 

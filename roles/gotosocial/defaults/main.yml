@@ -1,7 +1,7 @@
 ---
 
 gotosocial_user: "gotosocial"
-gotosocial_version: 0.3.8
+gotosocial_version: 0.10.0
 gotosocial_base_path: "/opt/gotosocial"
 gotosocial_config_path: "{{ gotosocial_base_path }}/config"
 gotosocial_template_path: "{{ gotosocial_base_path }}/templates"
@@ -40,7 +40,10 @@ gotosocial_config_web_asset_base_dir: "{{ gotosocial_asset_path }}"
 
 # instance privacy
 gotosocial_config_instance_expose_peers: false
-gotosocial_config_expose_suspended: false
+gotosocial_config_instance_expose_suspended: false
+gotosocial_config_instance_expose_public_timeline: false
+gotosocial_config_instance_deliver_to_shared_inboxes: true
+gotosocial_config_instance_inject_mastodon_version: false
 
 # account config
 gotosocial_config_accounts_registration_open: true
@@ -82,6 +85,8 @@ gotosocial_config_oidc_scopes:
   - openid
   - email
   - profile
+gotosocial_config_oidc_link_existing: false
+gotosocial_config_oidc_admin_groups: []
 
 # smtp config
 gotosocial_config_smtp_host: ~
@@ -89,6 +94,7 @@ gotosocial_config_smtp_port: ~
 gotosocial_config_smtp_username: ~
 gotosocial_config_smtp_password: ~
 gotosocial_config_smtp_from: ~
+gotosocial_config_smtp_disclose_recipients: false
 
 # syslog config
 gotosocial_config_syslog_enabled: false

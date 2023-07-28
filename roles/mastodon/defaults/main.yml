@@ -4,7 +4,7 @@ mastodon_user: mastodon
 mastodon_base_path: /opt/mastodon
 mastodon_domain: ~
 mastodon_web_domain: ~
-mastodon_version: 3.5.11
+mastodon_version: 4.1.5
 mastodon_git_upstream_url: "https://github.com/mastodon/mastodon.git"
 
 mastodon_data_path: "{{ mastodon_base_path }}/data"

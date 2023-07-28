@@ -43,7 +43,7 @@ gotosocial_config_instance_expose_peers: false
 gotosocial_config_expose_suspended: false
 
 # account config
-gotosocial_config_acounts_registration_open: true
+gotosocial_config_accounts_registration_open: true
 gotosocial_config_accounts_approval_required: true
 gotosocial_config_accounts_reason_required: true
 

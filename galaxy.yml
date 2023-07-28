@@ -3,13 +3,12 @@ name: fediverse
 version: 0.0.1
 readme: README.md
 authors:
-- Johanna Dorothea Reichmann <transcaffeine@finallycoffee.eu>
-description: Various ansible roles for deploying fediverse software
+- transcaffeine <transcaffeine@finally.coffee>
+description: Deploying fediverse software, mostly ActivityPub based
 dependencies:
   "community.docker": "^1.10.0"
-license:
-- CNPLv7+
+license_file: LICENSE.md
 build_ignore:
 - '*.tar.gz'
-repository: https://git.finallycoffee.eu/finallycoffee.eu/fediverse
-issues: https://git.finallycoffee.eu/finallycoffee.eu/fediverse/issues
+repository: https://git.finally.coffee/finallycoffee/fediverse
+issues: https://git.finally.coffee/finallycoffee/fediverse/issues

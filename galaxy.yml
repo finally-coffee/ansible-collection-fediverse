@@ -1,12 +1,12 @@
 namespace: finallycoffee
 name: fediverse
-version: 0.1.1
+version: 0.1.2
 readme: README.md
 authors:
 - transcaffeine <transcaffeine@finally.coffee>
 description: Deploying fediverse software, mostly ActivityPub based
 dependencies:
-  "community.docker": "^3.0.0"
+  "community.docker": "^4.0.0"
 license_file: LICENSE.md
 build_ignore:
 - '*.tar.gz'

@@ -1,6 +1,6 @@
 ---
 gotosocial_user: "gotosocial"
-gotosocial_version: "0.18.1"
+gotosocial_version: "0.18.2"
 gotosocial_base_path: "/opt/gotosocial"
 gotosocial_config_path: "{{ gotosocial_base_path }}/config"
 gotosocial_template_path: "{{ gotosocial_base_path }}/templates"

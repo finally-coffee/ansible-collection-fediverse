@@ -9,6 +9,9 @@ available.
 
 ## Roles
 
+- [`fediwall`](roles/fediwall/README.md): deployment of [Fediwall](https://fediwall.social),
+  a media wall for mastodon inspired by mastowall.
+
 - [`gotosocial`](roles/gotosocial/README.md): deployment of [GoToSocial.org](https://gotosocial.org/),
   an ActivityPub social network server, in a docker container.
 

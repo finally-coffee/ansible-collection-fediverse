@@ -1,0 +1,26 @@
+---
+- name: Ensure container image '{{ fediwall_container_image }}' is {{ fediwall_state }}
+  community.docker.docker_image:
+    name: "{{ fediwall_container_image }}"
+    state: "{{ fediwall_state }}"
+    source: "{{ fediwall_container_image_source }}"
+    force_source: "{{ fediwall_container_image_force_source }}"
+
+- name: Ensure container '{{ fediwall_container_name }}' is {{ fediwall_container_state }}
+  community.docker.docker_container:
+    name: "{{ fediwall_container_name }}"
+    image: "{{ fediwall_container_image }}"
+    env: "{{ fediwall_container_env | default(omit, true) }}"
+    user: "{{ fediwall_container_user | default(omit, true) }}"
+    ports: "{{ fediwall_container_ports | default(omit, true) }}"
+    labels: "{{ fediwall_container_labels | default(omit, true) }}"
+    volumes: "{{ fediwall_container_final_volumes | default(omit, true) }}"
+    networks: "{{ fediwall_container_networks | default(omit, true) }}"
+    network_mode: "{{ fediwall_container_network_mode | default(omit, true) }}"
+    dns_servers: "{{ fediwall_container_dns_servers | default(omit, true) }}"
+    etc_hosts: "{{ fediwall_container_etc_hosts | default(omit, true) }}"
+    memory: "{{ fediwall_container_memory | default(omit, true) }}"
+    memory_swap: "{{ fediwall_container_memory_swap | default(omit, true) }}"
+    memory_reservation: "{{ fediwall_container_memory_reservation | default(omit, true) }}"
+    restart_policy: "{{ fediwall_container_restart_policy }}"
+    state: "{{ fediwall_container_state }}"

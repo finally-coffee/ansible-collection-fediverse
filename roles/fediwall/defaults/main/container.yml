@@ -1,0 +1,45 @@
+---
+fediwall_container_name: fediwall
+fediwall_container_image_registry: ghcr.io
+fediwall_container_image_namespace: defnull
+fediwall_container_image_name: fediwall
+fediwall_container_image_repository: >-2
+  {{
+    [
+      fediwall_container_image_registry | default([], true),
+      fediwall_container_image_namespace | default([], true),
+      fediwall_container_image_name
+    ] | flatten | join('/')
+  }}
+fediwall_container_image_tag: ~
+fediwall_container_image_source: pull
+fediwall_container_image_force_source: >-2
+  {{ fediwall_container_image_tag | default(false, true) | bool }}
+fediwall_container_image: >-2
+  {{
+    [
+      fediwall_container_image_repository,
+      fediwall_container_image_tag | default(fediwall_version, true)
+    ] | join(':')
+  }}
+fediwall_container_env: ~
+fediwall_container_user: ~
+fediwall_container_ports: ~
+fediwall_container_labels: ~
+fediwall_container_volumes: []
+fediwall_container_networks: ~
+fediwall_container_network_mode: ~
+fediwall_container_dns_servers: ~
+fediwall_container_etc_hosts: ~
+fediwall_container_memory: ~
+fediwall_container_memory_swap: ~
+fediwall_container_memory_reservation: ~
+fediwall_container_restart_policy: "on-failure"
+
+fediwall_container_config_file: "/usr/share/nginx/html/wall-config.json"
+fediwall_container_base_volumes:
+  - "{{ fediwall_config_file }}:{{ fediwall_container_config_file }}:ro"
+fediwall_container_final_volumes: >-2
+  {{ fediwall_container_base_volumes + fediwall_container_volumes }}
+fediwall_container_state: >-2
+  {{ (fediwall_state == 'present') | ternary('started', 'absent') }}

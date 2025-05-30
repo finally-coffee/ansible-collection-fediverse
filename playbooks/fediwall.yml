@@ -1,0 +1,6 @@
+---
+- name: Install and configure fediwall
+  hosts: "{{ fediwall_hosts | default('fediwall') }}"
+  become: "{{ fediwall_become | default(false) }}"
+  roles:
+    - role: fediwall

@@ -1,0 +1,8 @@
+---
+fediwall_user: fediwall
+fediwall_version: "1.4.0"
+fediwall_config_file: "/etc/fediwall/config.json"
+fediwall_config_file_path: "{{ fediwall_config_file | dirname }}"
+
+fediwall_state: "present"
+fediwall_deployment_method: "docker"

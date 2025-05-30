@@ -1,0 +1,6 @@
+---
+fediwall_states:
+  - "present"
+  - "absent"
+fediwall_deployment_methods:
+  - "docker"

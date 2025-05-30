@@ -1,0 +1,50 @@
+---
+fediwall_config_servers:
+  - mastodon.social
+fediwall_config_tags:
+  - cats
+fediwall_config_accounts: []
+fediwall_config_load_public: false
+fediwall_config_load_federated: false
+fediwall_config_load_trends: false
+fediwall_config_languages: []
+fediwall_config_bad_words: []
+fediwall_config_hide_sensitive: true
+fediwall_config_hide_bots: true
+fediwall_config_hide_replies: true
+fediwall_config_hide_boosts: false
+fediwall_config_limit: 20
+fediwall_config_interval: 10
+fediwall_config_title: "Fediwall"
+fediwall_config_theme: "auto"
+fediwall_config_show_infobar: true
+fediwall_config_show_text: true
+fediwall_config_show_media: true
+fediwall_config_play_videos: true
+
+fediwall_default_config:
+  servers: "{{ fediwall_config_servers }}"
+  tags: "{{ fediwall_config_tags }}"
+  accounts: "{{ fediwall_config_accounts }}"
+  loadPublic: "{{ fediwall_config_load_public }}"
+  loadFederated: "{{ fediwall_config_load_federated }}"
+  loadTrends: "{{ fediwall_config_load_trends }}"
+  languages: "{{ fediwall_config_languages }}"
+  badWords: "{{ fediwall_config_bad_words }}"
+  hideSensitive: "{{ fediwall_config_hide_sensitive }}"
+  hideBots: "{{ fediwall_config_hide_bots }}"
+  hideReplies: "{{ fediwall_config_hide_replies }}"
+  hideBoosts: "{{ fediwall_config_hide_boosts }}"
+  limit: "{{ fediwall_config_limit }}"
+  interval: "{{ fediwall_config_interval }}"
+  title: "{{ fediwall_config_title }}"
+  theme: "{{ fediwall_config_theme }}"
+  showInfobar: "{{ fediwall_config_show_infobar }}"
+  showText: "{{ fediwall_config_show_text }}"
+  showMedia: "{{ fediwall_config_show_media }}"
+  playVideos: "{{ fediwall_config_play_videos }}"
+
+fediwall_config: {}
+fediwall_final_config: >-2
+  {{ fediwall_default_config | default({}, true)
+    | combine(fediwall_config | default({}, true)) }}

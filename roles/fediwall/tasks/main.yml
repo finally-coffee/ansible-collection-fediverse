@@ -1,0 +1,43 @@
+---
+- name: Ensure 'fediwall_state' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported state '{{ fediwall_state }}'. Supported
+      states are {{ fediwall_states | map(quote) | join(', ') }}
+  when: fediwall_state not in fediwall_states
+
+- name: Ensure 'fediwall_deployment_method' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported deployment method '{{ fediwall_deployment_method }}'.
+      upported deployment methods are {{ fediwall_deployment_methods | join(', ') }}
+  when: fediwall_deployment_method not in fediwall_deployment_methods
+
+- name: Ensure user '{{ fediwall_user }}' is {{ fediwall_state }}
+  ansible.builtin.user:
+    name: "{{ fediwall_user }}"
+    state: "{{ fediwall_state }}"
+    system: "{{ fediwall_user_system | default(true, true) }}"
+    create_home: "{{ fediwall_user_system | default(false, true) }}"
+
+- name: Ensure configuration folder '{{ fediwall_config_file_path }}' is {{ fediwall_state }}
+  ansible.builtin.file:
+    path: "{{ fediwall_config_file_path }}"
+    state: directory
+  when: fediwall_state == 'present'
+
+- name: Ensure configuration in '{{ fediwall_config_file }}' is {{ fediwall_state }}
+  ansible.builtin.copy:
+    content: "{{ fediwall_final_config | to_nice_json(indent=2) }}"
+    dest: "{{ fediwall_config_file }}"
+    state: "{{ fediwall_state }}"
+
+- name: Ensure configuration folder is {{ fediwall_state }}
+  ansible.builtin.file:
+    path: "{{ fediwall_config_file_path }}"
+    state: absent
+  when: fediwall_state == 'absent'
+
+- name: Deploy using {{ fediwall_deployment_method }}
+  ansible.builtin.include_tasks:
+    file: "deploy-{{ fediwall_deployment_method }}.yml"

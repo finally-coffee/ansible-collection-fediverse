@@ -7,6 +7,7 @@ authors:
 description: Deploying fediverse software, mostly ActivityPub based
 dependencies:
   "community.docker": "^4.0.0"
+  "community.general": "^10.6.0"
 license_file: LICENSE.md
 build_ignore:
 - '*.tar.gz'
@@ -15,3 +16,4 @@ issues: https://codeberg.org/finallycoffee/ansible-collection-fediverse/issues
 tags:
   - fediwall
   - gotosocial
+  - mastodon

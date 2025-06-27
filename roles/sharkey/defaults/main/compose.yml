@@ -1,0 +1,15 @@
+---
+sharkey_compose_state: "{{ sharkey_state }}"
+sharkey_compose_project_name: "sharkey"
+sharkey_compose_project_src: "/etc/sharkey"
+sharkey_compose_upstream_file: "{{ sharkey_compose_project_src }}/compose.upstream.yml"
+sharkey_compose_file: "{{ sharkey_compose_project_src }}/compose.yml"
+sharkey_compose_build: >-2
+  {{ (sharkey_container_image_source == 'pull') | ternary('never', 'policy') }}
+sharkey_compose_build: "never"
+
+sharkey_repo_server: "https://activitypub.software"
+sharkey_repo_path: "Transfem-org/Sharkey"
+sharkey_repo_tag: "{{ sharkey_version }}"
+sharkey_compose_file_url: >-2
+  {{ sharkey_repo_server }}/{{ sharkey_repo_path }}/-/raw/{{ sharkey_version }}/compose_example.yml?ref_type=tags

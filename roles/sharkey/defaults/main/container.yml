@@ -1,0 +1,24 @@
+---
+sharkey_container_name: sharkey
+sharkey_container_image_registry: "registry.activitypub.software"
+sharkey_container_iamge_namespace: "transfem-org"
+sharkey_container_image_name: "sharkey"
+sharkey_container_image_repository: >-2
+  {{
+    [
+      sharkey_container_image_registry | default([], true),
+      sharkey_container_iamge_namespace | default([], true),
+      sharkey_container_image_name
+    ] | flatten | join('/')
+  }}
+sharkey_container_image_tag: ~
+sharkey_container_image_source: pull
+sharkey_container_image_force_source: >-2
+  {{ sharkey_container_image_tag | default(false, true) | bool }}
+sharkey_container_image: >-2
+  {{
+    [
+      sharkey_container_image_repository,
+      sharkey_container_image_tag | default(sharkey_version, true)
+    ] | join(':')
+  }}

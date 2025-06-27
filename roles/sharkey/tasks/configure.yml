@@ -1,0 +1,26 @@
+---
+- name: Ensure sharkey user '{{ sharkey_user }}' is {{ sharkey_state }}
+  ansible.builtin.user:
+    name: "{{ sharkey_user }}"
+    state: "{{ sharkey_state }}"
+    system: "{{ sharkey_user_system }}"
+    create_home: "{{ sharkey_user_create_home }}"
+    groups: "{{ sharkey_user_groups }}"
+    append: "{{ sharkey_user_append_groups }}"
+  register: sharkey_user_info
+
+- name: Ensure sharkey config directory '{{ sharkey_config_dir }}' is {{ sharkey_state }}
+  ansible.builtin.file:
+    path: "{{ sharkey_config_dir }}"
+    state: "{{ (sharkey_state == 'present') | ternary('directory', 'absent') }}"
+    owner: "{{ sharkey_user_uid }}"
+    group: "{{ sharkey_user_gid }}"
+    mode: "0750"
+
+- name: Ensure sharkey data directory '{{ sharkey_data_dir }}' is {{ sharkey_state }}
+  ansible.builtin.file:
+    path: "{{ sharkey_data_dir }}"
+    state: "{{ (sharkey_state == 'present') | ternary('directory', 'absent') }}"
+    owner: "{{ sharkey_user_uid }}"
+    group: "{{ sharkey_user_gid }}"
+    mode: "0750"

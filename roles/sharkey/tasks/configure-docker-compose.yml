@@ -1,0 +1,7 @@
+---
+- name: Ensure compose files are downloaded
+  ansible.builtin.get_url:
+    # TODO: how to avoid redownloading default.yml when the role made changes?
+    url: "{{ sharkey_compose_file_url }}"
+    dest: "{{ sharkey_compose_upstream_file }}"
+

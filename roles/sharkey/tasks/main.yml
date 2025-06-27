@@ -1,0 +1,12 @@
+---
+- name: Check role prerequisites
+  ansible.builtin.include_tasks:
+    file: check.yml
+
+- name: Run common configuration tasks
+  ansible.builtin.include_tasks:
+    file: configure.yml
+
+- name: Deploy using {{ sharkey_deployment_method }}
+  ansible.builtin.include_tasks:
+    file: "deploy-{{ sharkey_deployment_method }}.yml"

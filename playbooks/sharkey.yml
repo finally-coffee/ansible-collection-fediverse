@@ -1,0 +1,6 @@
+---
+- name: Deploy sharkey
+  hosts: "{{ sharkey_hosts | default('sharkey') }}"
+  become: "{{ sharkey_become | default(false) }}"
+  roles:
+    - role: finallycoffee.fediverse.sharkey

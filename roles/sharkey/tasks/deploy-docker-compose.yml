@@ -1,0 +1,14 @@
+---
+- name: Ensure sharkey container image '{{ sharkey_container_image }}' is {{ sharkey_state }}
+  community.docker.docker_image:
+    name: "{{ sharkey_container_image }}"
+    state: "{{ sharkey_state }}"
+    source: "{{ sharkey_container_image_source }}"
+    force_source: "{{ sharkey_container_image_force_source }}"
+
+- name: Ensure docker compose project is {{ sharkey_compose_state }}
+  community.docker.docker_compose_v2:
+    project_name: "{{ sharkey_compose_project_name }}"
+    project_src: "{{ sharkey_compose_project_src }}"
+    state: "{{ sharkey_compose_state }}"
+    build: "{{ sharkey_compose_build }}"

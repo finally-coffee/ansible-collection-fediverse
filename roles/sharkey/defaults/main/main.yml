@@ -1,0 +1,9 @@
+---
+sharkey_user: sharkey
+sharkey_version: "2025.4.3"
+sharkey_config_dir: "/etc/sharkey"
+sharkey_data_dir: "/var/lib/sharkey"
+sharkey_file_dir: "{{ sharkey_data_dir }}/files"
+
+sharkey_state: present
+sharkey_deployment_method: "docker-compose"

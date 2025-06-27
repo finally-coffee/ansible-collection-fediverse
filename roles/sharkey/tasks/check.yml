@@ -1,0 +1,26 @@
+---
+- name: Ensure 'sharkey_state' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported sharkey_state '{{ sharkey_state }}'.
+      Supported values are {{ sharkey_states | join(', ') }}
+  when: sharkey_state not in sharkey_states
+
+- name: Ensure 'sharkey_deployment_method' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported sharkey_deployment_method '{{ sharkey_deployment_method }}.
+      Supported values are {{ sharkey_deployment_methods | join(', ') }}
+  when: sharkey_deployment_method not in sharkey_deployment_methods
+
+- name: Ensure 'sharkey_config_url' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Variable 'sharkey_config_url' is not populated! This variable
+      is mandatory to set when deploying sharkey.
+  when:
+    - sharkey_state == 'present'
+    - >-2
+        sharkey_config_url is not defined
+          or ((sharkey_config_url | string) == 'None')
+          or ((sharkey_config_url | string | length) == 0)

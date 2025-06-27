@@ -1,0 +1,14 @@
+---
+allow_duplicates: true
+dependencies: []
+galaxy_info:
+  role_name: sharkey
+  description: >-2
+    Deploy Sharkey, a fork of Misskey with full Mastodon-API support
+  galaxy_tags:
+    - sharkey
+    - misskey
+    - mastodon
+    - docker
+    - activitypub
+    - fediverse

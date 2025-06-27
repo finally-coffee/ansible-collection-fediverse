@@ -1,0 +1,68 @@
+---
+- name: Ensure sharkey user '{{ sharkey_user }}' is {{ sharkey_state }}
+  ansible.builtin.user:
+    name: "{{ sharkey_user }}"
+    state: "{{ sharkey_state }}"
+    system: "{{ sharkey_user_system }}"
+    create_home: "{{ sharkey_user_create_home }}"
+    groups: "{{ sharkey_user_groups }}"
+    append: "{{ sharkey_user_append_groups }}"
+  register: sharkey_user_info
+
+- name: Ensure sharkey config directory '{{ sharkey_config_dir }}' is {{ sharkey_state }}
+  ansible.builtin.file:
+    path: "{{ sharkey_config_dir }}"
+    state: "{{ (sharkey_state == 'present') | ternary('directory', 'absent') }}"
+    owner: "{{ sharkey_user_uid }}"
+    group: "{{ sharkey_user_gid }}"
+    mode: "0750"
+
+- name: Ensure sharkey data directory '{{ sharkey_data_dir }}' is {{ sharkey_state }}
+  ansible.builtin.file:
+    path: "{{ sharkey_data_dir }}"
+    state: "{{ (sharkey_state == 'present') | ternary('directory', 'absent') }}"
+    owner: "{{ sharkey_user_uid }}"
+    group: "{{ sharkey_user_gid }}"
+    mode: "0750"
+
+- name: Ensure sharkey file directory '{{ sharkey_file_dir }}' is {{ sharkey_state }}
+  ansible.builtin.file:
+    path: "{{ sharkey_file_dir }}"
+    state: "{{ (sharkey_state == 'present') | ternary('directory', 'absent') }}"
+    owner: "{{ sharkey_user_uid }}"
+    group: "{{ sharkey_user_gid }}"
+    mode: "0750"
+
+- name: Ensure sharkey config file '{{ sharkey_config_file }}' is {{ sharkey_state }}
+  when: sharkey_state == 'present'
+  block:
+    # TODO: wrongly reports changed in checkmode due to different hashes
+    - name: Ensure sharkey upstream config file is {{ sharkey_state }}
+      ansible.builtin.get_url:
+        url: "{{ sharkey_config_upstream_file_url }}"
+        dest: "{{ sharkey_config_upstream_file }}"
+        owner: "{{ sharkey_user_uid }}"
+        group: "{{ sharkey_user_gid }}"
+        mode: "0440"
+    
+    - name: Read upstream sharkey config file
+      ansible.builtin.slurp:
+        src: "{{ sharkey_config_upstream_file }}"
+      register: sharkey_config_upstream_file_contents
+    
+    - name: Ensure sharkey configuration file is {{ sharkey_state }}
+      ansible.builtin.copy:
+        content: "{{ sharkey_config_file_contents }}"
+        dest: "{{ sharkey_config_file }}"
+        owner: "{{ sharkey_user_uid }}"
+        group: "{{ sharkey_user_gid }}"
+        mode: "0640"
+
+- name: Run configure steps for deployment using containers
+  ansible.builtin.include_tasks:
+    file: "configure-docker.yml"
+  when: sharkey_deployment_method in ['docker-compose']
+
+- name: Configure for {{ sharkey_deployment_method }}
+  ansible.builtin.include_tasks:
+    file: "configure-{{ sharkey_deployment_method }}.yml"

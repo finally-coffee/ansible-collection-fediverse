@@ -1,0 +1,9 @@
+---
+- name: Ensure sharkey docker environment is templated
+  ansible.builtin.copy:
+    content: "{{ sharkey_container_env_file_contents }}"
+    dest: "{{ sharkey_container_env_file }}"
+    owner: "{{ sharkey_user_uid }}"
+    group: "{{ sharkey_user_gid }}"
+    mode: "0640"
+  when: sharkey_state == 'present'

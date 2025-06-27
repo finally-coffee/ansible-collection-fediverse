@@ -1,0 +1,39 @@
+---
+- name: Ensure directories for compose services are {{ sharkey_state }}
+  ansible.builtin.file:
+    name: "{{ file.path }}"
+    state: "{{ (sharkey_state == 'present') | ternary('directory', 'absent') }}"
+    owner: "{{ sharkey_user_uid }}"
+    group: "{{ sharkey_user_gid }}"
+    mode: "0750"
+  loop:
+    - path: "{{ sharkey_compose_redis_dir }}"
+    - path: "{{ sharkey_compose_database_dir }}"
+  loop_control:
+    loop_var: file
+    label: "{{ file.path }}"
+
+- name: Ensure final compose file is templated
+  when: sharkey_state == 'present'
+  block:
+    # TODO: wronlgy reports changed in checkmode due to hash mismatches
+    - name: Ensure compose files are downloaded
+      ansible.builtin.get_url:
+        url: "{{ sharkey_compose_file_url }}"
+        dest: "{{ sharkey_compose_upstream_file }}"
+        owner: "{{ sharkey_user_uid }}"
+        group: "{{ sharkey_user_gid }}"
+        mode: "0444"
+    
+    - name: Read compose file contents
+      ansible.builtin.slurp:
+        src: "{{ sharkey_compose_upstream_file }}"
+      register: sharkey_compose_upstream_file_contents
+    
+    - name: Ensure modified compose file is written
+      ansible.builtin.copy:
+        content: "{{ sharkey_compose_file_contents }}"
+        dest: "{{ sharkey_compose_file }}"
+        owner: "{{ sharkey_user_uid }}"
+        group: "{{ sharkey_user_gid }}"
+        mode: "0644"

@@ -1,0 +1,47 @@
+---
+sharkey_container_name: sharkey
+sharkey_container_image_registry: "registry.activitypub.software"
+sharkey_container_iamge_namespace: "transfem-org"
+sharkey_container_image_name: "sharkey"
+sharkey_container_image_repository: >-2
+  {{
+    [
+      sharkey_container_image_registry | default([], true),
+      sharkey_container_iamge_namespace | default([], true),
+      sharkey_container_image_name
+    ] | flatten | join('/')
+  }}
+sharkey_container_image_tag: ~
+sharkey_container_image_source: pull
+sharkey_container_image_force_source: >-2
+  {{ sharkey_container_image_tag | default(false, true) | bool }}
+sharkey_container_image: >-2
+  {{
+    [
+      sharkey_container_image_repository,
+      sharkey_container_image_tag | default(sharkey_version, true)
+    ] | join(':')
+  }}
+sharkey_container_default_env:
+  MISSKEY_URL: "{{ sharkey_config_url }}"
+  POSTGRES_USER: "{{ sharkey_config_postgres_user }}"
+  POSTGRES_PASSWORD: "{{ sharkey_config_postgres_password }}"
+  POSTGRES_DB: "{{ sharkey_config_postgres_db }}"
+  DATABASE_URL: >-2
+    {{
+      (sharkey_config_postgres_user | default(false, true))
+      | ternary(sharkey_config_postgres_db_url, '')
+    }}
+sharkey_container_env: ~
+sharkey_container_merged_env: >-2
+  {{
+    sharkey_container_default_env | default({}, true)
+    | combine(sharkey_container_env | default({}, true), recursive=True)
+  }}
+sharkey_container_env_file_contents: |2
+  {% for entry in sharkey_container_merged_env | dict2items %}
+  {% if entry['value'] is string and entry['value'] | length > 0 %}
+  {{ entry['key'] }}={{ entry['value'] }}
+  {% endif %}
+  {% endfor %}
+sharkey_container_env_file: "{{ sharkey_config_dir }}/docker.env"

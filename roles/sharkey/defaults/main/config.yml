@@ -1,0 +1,30 @@
+---
+sharkey_config_url: ~
+sharkey_config_setup_password: ~
+sharkey_config_postgres_user: misskey
+sharkey_config_postgres_password: "insecure_please_change_me!"
+sharkey_config_postgres_db: misskey
+sharkey_config_postgres_host: db
+sharkey_config_postgres_port: 5432
+sharkey_config_postgres_db_url: >-2
+  postgres://{{ sharkey_config_postgres_user }}:{{ sharkey_config_postgres_password }}@{{ sharkey_config_postgres_host }}:{{ sharkey_config_postgres_port }}/{{ sharkey_config_postgres_db }}
+
+sharkey_config: ~
+sharkey_config_file_overrides:
+  url: "{{ sharkey_config_url }}"
+  db:
+    host: "{{ sharkey_config_postgres_host }}"
+    db: "{{ sharkey_config_postgres_db }}"
+    user: "{{ sharkey_config_postgres_user }}"
+    pass: "{{ sharkey_config_postgres_password }}"
+sharkey_config_file_contents: >-2
+  {{
+    (sharkey_config_upstream_file_contents['content'] | b64decode | from_yaml)
+    | combine(sharkey_config_file_overrides, recursive=True)
+    | combine(sharkey_config | default({}, true), recursive=True)
+    | to_nice_yaml(indent=4)
+  }}
+sharkey_config_upstream_file: "{{ sharkey_config_dir }}/config.upstream.yaml"
+sharkey_config_file: "{{ sharkey_config_dir }}/default.yaml"
+sharkey_config_upstream_file_url: >-2
+  {{ sharkey_repo_server }}/{{ sharkey_repo_path }}/-/raw/{{ sharkey_version }}/.config/docker_example.yml?ref=tags

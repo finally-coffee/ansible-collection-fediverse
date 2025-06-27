@@ -18,6 +18,9 @@ available.
 - [`mastodon`](roles/mastodon/README.md): deployment using a container based
   setup, able to use webfinger delegation.
 
+- [`sharkey`](roles/sharkey/README.md): deployment of sharkey, a misskey-
+  fork with full mastodon API compatability.
+
 ## License
 
 [CNPLv7+](LICENSE.md): Cooperative Nonviolent Public License

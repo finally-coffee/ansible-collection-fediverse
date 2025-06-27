@@ -1,0 +1,10 @@
+---
+sharkey_user_system: true
+sharkey_user_create_home: false
+sharkey_user_groups: ~
+sharkey_user_append_groups: >-2
+  {{ sharkey_user_groups | default(omit, true) }}
+sharkey_user_uid: >-2
+  {{ sharkey_user_info.uid | default(sharkey_user) }}
+sharkey_user_gid: >-2
+  {{ sharkey_user_info.group | default(sharkey_user) }}

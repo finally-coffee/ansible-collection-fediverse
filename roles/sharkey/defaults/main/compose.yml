@@ -1,0 +1,41 @@
+---
+sharkey_compose_state: "{{ sharkey_state }}"
+sharkey_compose_project_name: "sharkey"
+sharkey_compose_project_src: "{{ sharkey_config_dir }}"
+sharkey_compose_upstream_file: "{{ sharkey_compose_project_src }}/compose.upstream.yml"
+sharkey_compose_file: "{{ sharkey_compose_project_src }}/compose.yml"
+sharkey_compose_build: >-2
+  {{ (sharkey_container_image_source == 'pull') | ternary('never', 'policy') }}
+
+sharkey_compose_redis_dir: "{{ sharkey_data_dir }}/redis"
+sharkey_compose_database_dir: "{{ sharkey_data_dir }}/postgres"
+
+sharkey_repo_server: "https://activitypub.software"
+sharkey_repo_path: "Transfem-org/Sharkey"
+sharkey_repo_tag: "{{ sharkey_version }}"
+sharkey_compose_file_url: >-2
+  {{ sharkey_repo_server }}/{{ sharkey_repo_path }}/-/raw/{{ sharkey_version }}/compose_example.yml?ref_type=tags
+sharkey_compose_file_overrides: ~
+sharkey_compose_file_role_overrides:
+  services:
+    web:
+      image: "{{ sharkey_container_image }}"
+      volumes:
+        - "{{ sharkey_file_dir }}:/sharkey/files:rw"
+        - "{{ sharkey_config_file }}:/sharkey/.config/default.yaml:ro"
+        - "{{ sharkey_container_env_file }}:/sharkey/.config/docker.env:ro"
+    db:
+      env_file: "{{ sharkey_container_env_file }}"
+      volumes:
+        - "{{ sharkey_compose_database_dir }}:/var/lib/postgresql/data:rw"
+    redis:
+      volumes: 
+        - "{{ sharkey_compose_redis_dir }}:/data:rw" 
+  # override net segment?
+sharkey_compose_file_contents: >-2
+  {{
+    (sharkey_compose_upstream_file_contents['content'] | b64decode | from_yaml)
+    | combine(sharkey_compose_file_role_overrides, recursive=True)
+    | combine(sharkey_compose_file_overrides | default({}, true), recursive=True)
+    | to_nice_yaml(indent=4)
+  }}

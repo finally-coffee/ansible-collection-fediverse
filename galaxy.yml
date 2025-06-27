@@ -15,5 +15,6 @@ repository: https://git.finally.coffee/finallycoffee/fediverse
 issues: https://codeberg.org/finallycoffee/ansible-collection-fediverse/issues
 tags:
   - fediwall
+  - sharkey
   - gotosocial
   - mastodon

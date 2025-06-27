@@ -1,0 +1,6 @@
+---
+sharkey_states:
+  - present
+  - absent
+sharkey_deployment_methods:
+  - "docker-compose"

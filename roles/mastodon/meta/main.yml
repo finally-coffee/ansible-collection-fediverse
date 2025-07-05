@@ -1,0 +1,12 @@
+---
+allow_duplicates: true
+dependencies: []
+galaxy_info:
+  role_name: mastodon
+  description: >-2
+    Deploy Mastodon, a social network server based on activity pub, built with ruby and nodejs
+  galaxy_tags:
+    - mastodon
+    - activitypub
+    - fediverse
+    - docker

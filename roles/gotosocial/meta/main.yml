@@ -1,0 +1,14 @@
+---
+allow_duplicates: true
+dependencies: []
+galaxy_info:
+  role_name: gotosocial
+  description: >-2
+    Deploy GoToSocial, a lightweight, customizable and safety-focused
+    activitypub server written in golang.
+  galaxy_tags:
+    - gotosocial
+    - gts
+    - docker
+    - activitypub
+    - fediverse
